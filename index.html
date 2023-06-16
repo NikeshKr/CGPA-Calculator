@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CGPA Calculator</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px 20px;
+            margin-top: 10px;
+            background-color: #4caf50;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #cgpa-result {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CGPA Calculator</h1>
+    <form id="cgpa-form" action="/calculate" method="POST">
+        <label for="num-semesters">Number of Semesters:</label>
+        <input type="number" id="num-semesters" min="1" required>
+
+        <div id="semester-details"></div>
+
+        <button type="submit">Calculate CGPA</button>
+    </form>
+
+    <div id="cgpa-result"></div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add event listener to the form submit event
+            document.getElementById("cgpa-form").addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                var numSemesters = parseInt(document.getElementById("num-semesters").value);
+                var semesterDetails = "";
+
+                // Generate input fields for each semester
+                for (var i = 1; i <= numSemesters; i++) {
+                    semesterDetails += `
+                        <h3>Semester ${i}</h3>
+                        <label for="cgpa-${i}">CGPA:</label>
+                        <input type="number" id="cgpa-${i}" step="0.01" required>
+
+                        <label for="credits-${i}">Credits:</label>
+                        <input type="number" id="credits-${i}" min="1" required>
+                    `;
+                }
+
+                // Update the semester-details div with the generated input fields
+                document.getElementById("semester-details").innerHTML = semesterDetails;
+            });
+
+            // Add event listener to the form submission
+            document.getElementById("cgpa-form").addEventListener("submit", function(event) {
+                event.preventDefault(); // Prevent form submission
+
+                var numSemesters = parseInt(document.getElementById("num-semesters").value);
+                var totalCredits = 0;
+                var weightedCgpaSum = 0;
+
+                // Calculate the overall CGPA
+                for (var i = 1; i <= numSemesters; i++) {
+                    var cgpa = parseFloat(document.getElementById("cgpa-" + i).value);
+                    var credits = parseInt(document.getElementById("credits-" + i).value);
+                    totalCredits += credits;
+                    weightedCgpaSum += cgpa * credits;
+                }
+
+                if (totalCredits === 0) {
+                    document.getElementById("cgpa-result").innerHTML = '<h2>Please enter valid credit values.</h2>';
+                } else {
+                    var overallCgpa = weightedCgpaSum / totalCredits;
+
+                    // Display the overall CGPA
+                    document.getElementById("cgpa-result").innerHTML = `<h2>Overall CGPA: ${overallCgpa.toFixed(2)}</h2>`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
